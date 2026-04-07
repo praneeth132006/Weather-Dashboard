@@ -1,52 +1,62 @@
-/* === Apple Weather Inspired Premium Global Styles === */
+/* ==========================================================================
+   WeatherDash Premium Dark Glassmorphism Styles (Overhaul v2)
+   ========================================================================== */
+
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
 
 :root {
+  /* Font Family - Premium and Contemporary */
   --font-primary: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
   
-  /* Modern Airy Palette */
-  --bg-clear-day: linear-gradient(180deg, #57a0ee 0%, #8ec5fc 100%);
-  --bg-clear-night: linear-gradient(180deg, #1a2a6c 0%, #b21f1f 50%, #fdbb2d 100%);
-  --bg-cloudy: linear-gradient(180deg, #899396 0%, #b1bfc3 100%);
-  --bg-rain: linear-gradient(180deg, #4d606b 0%, #7c8d99 100%);
-  --bg-snow: linear-gradient(180deg, #83a4d4 0%, #b6fbff 100%);
-  --bg-thunder: linear-gradient(180deg, #373b44 0%, #4286f4 100%);
+  /* Core Palette - Deep Atmospheric Tones */
+  --bg-primary: #020617; /* Slate 950 */
+  --bg-secondary: #0a1628;
+  --accent-cyan: #06b6d4;
+  --accent-amber: #f59e0b;
+  --accent-rose: #f43f5e;
+  --accent-blue: #3b82f6;
 
-  --text-primary: #ffffff;
-  --text-secondary: rgba(255, 255, 255, 0.7);
-  --text-muted: rgba(255, 255, 255, 0.5);
+  /* Typography Colors */
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
   
-  --glass-bg: rgba(255, 255, 255, 0.12);
-  --glass-border: rgba(255, 255, 255, 0.1);
-  --glass-blur: blur(24px);
+  /* Glassmorphism System */
+  --glass-bg: rgba(255, 255, 255, 0.03);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-blur: blur(32px);
+  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
   
-  --radius-lg: 24px;
+  /* Layout tokens */
+  --radius-lg: 20px;
   --radius-xl: 32px;
   --radius-full: 9999px;
   
-  --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-fast: all 0.2s ease;
 }
 
+/* Base Reset & Smooth Transitions */
 *, *::before, *::after {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+}
+
 body {
   font-family: var(--font-primary);
+  background-color: var(--bg-primary);
   color: var(--text-primary);
   min-height: 100vh;
   overflow-x: hidden;
   line-height: 1.5;
-  background-attachment: fixed;
-  background-size: cover;
-  transition: background 1s ease;
-}
-
-button, input {
-  font-family: inherit;
-  color: inherit;
+  transition: background 1.5s ease;
 }
 
 button {
@@ -54,43 +64,87 @@ button {
   border: none;
   background: none;
   outline: none;
+  font-family: inherit;
+  transition: var(--transition-fast);
 }
 
-/* Glass Tile Base */
+input {
+  font-family: inherit;
+  outline: none;
+}
+
+/* Glass Card Utility */
 .glass-tile {
   background: var(--glass-bg);
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-lg);
   backdrop-filter: var(--glass-blur);
   -webkit-backdrop-filter: var(--glass-blur);
-  padding: 20px;
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
-  transition: var(--transition);
+  box-shadow: var(--glass-shadow);
+  padding: 24px;
+  transition: var(--transition-normal);
+  position: relative;
+  overflow: hidden;
 }
 
 .glass-tile:hover {
-  transform: translateY(-2px);
-  background: rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.15);
+  transform: translateY(-4px);
 }
 
-/* Animations */
+/* Key Animations */
 @keyframes slideUp {
-  from { opacity: 0; transform: translateY(24px); }
+  from { opacity: 0; transform: translateY(32px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
 }
 
 .animate-up {
   animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-.loading-dots::after {
-  content: '...';
-  animation: dots 1.5s steps(4, end) infinite;
+.animate-fade {
+  animation: fadeIn 0.6s ease forwards;
 }
 
-@keyframes dots {
-  0% { content: ''; }
-  25% { content: '.'; }
-  50% { content: '..'; }
-  75% { content: '...'; }
+.animate-scale {
+  animation: scaleIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* Delays for Staggered Entrances */
+.delay-1 { animation-delay: 0.1s; opacity: 0; }
+.delay-2 { animation-delay: 0.2s; opacity: 0; }
+.delay-3 { animation-delay: 0.3s; opacity: 0; }
+.delay-4 { animation-delay: 0.4s; opacity: 0; }
+.delay-5 { animation-delay: 0.5s; opacity: 0; }
+
+/* Modal Backdrop Layering */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+/* Component Overrides for Dark Visibility */
+@media (max-width: 640px) {
+  html { font-size: 14px; }
 }
