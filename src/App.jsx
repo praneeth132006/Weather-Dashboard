@@ -19,6 +19,8 @@ import CurrentWeather from './components/CurrentWeather';
 import GridDetails from './components/GridDetails';
 import Forecast from './components/Forecast';
 import MetricModal from './components/MetricModal';
+import WeatherHero from './components/WeatherHero';
+import MetricWidgets from './components/MetricWidgets';
 
 /**
  * Main Application Component
@@ -174,70 +176,75 @@ function App() {
 
   return (
     <div 
+      className="app-container"
       style={{ 
         background: getAppStyle(), 
-        minHeight: '100vh', 
         transition: 'background 2s cubic-bezier(0.16, 1, 0.3, 1)' 
       }}
     >
-      <div className="app-container">
-        {/* Main Navigation & Utility Header */}
-        <Header 
-          onSearch={handleSearch} 
-          unit={unit} 
-          toggleUnit={toggleUnit} 
-          theme={theme}
-          toggleTheme={toggleTheme}
-          loading={loading} 
-        />
+      {/* Background Atmosphere Glow */}
+      <div className="atmos-glow" style={{ background: theme === 'light' ? 'rgba(56, 189, 248, 0.3)' : 'rgba(59, 130, 246, 0.2)' }}></div>
 
-        {/* Global Modal Overlay - Only visible when a metric is selected */}
-        <MetricModal 
-          isOpen={isModalOpen} 
-          onClose={handleCloseDetail} 
-          metric={selectedMetric} 
-        />
+      {/* Main Navigation & Utility Header */}
+      <Header 
+        onSearch={handleSearch} 
+        unit={unit} 
+        toggleUnit={toggleUnit} 
+        theme={theme}
+        toggleTheme={toggleTheme}
+        loading={loading} 
+      />
 
-        {/* Conditional Component Rendering */}
-        {loading && !weatherData ? (
-          <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '60vh' }}>
-            <div className="animate-fade" style={{ fontSize: '1.2rem', fontWeight: 600, color: 'var(--text-muted)' }}>
-              Gathering Meteorological Data...
+      {loading ? (
+        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div className="pulse-glow" style={{ width: '40px', height: '40px', background: 'var(--accent-blue)', borderRadius: '50%' }}></div>
+        </div>
+      ) : error ? (
+        <ErrorState error={error} onRetry={() => handleSearch(lastCity || 'London')} />
+      ) : !weatherData ? (
+        <WelcomeState onRecentSearch={handleSearch} />
+      ) : (
+        <>
+          {/* Main Panoramic Content Area (3 Columns) */}
+          <main className="main-panorama">
+            
+            {/* Left Column: Conditions & Identity */}
+            <div className="left-column">
+              <CurrentWeather data={weatherData} unit={unit} />
             </div>
-          </div>
-        ) : error ? (
-          <ErrorState 
-            title={error.title} 
-            message={error.message} 
-            onRetry={() => setError(null)} 
-          />
-        ) : weatherData && forecastData ? (
-          <main>
-            {/* Primary Hero Visualization */}
-            <CurrentWeather data={weatherData} unit={unit} />
-            
-            {/* Multi-Day Detailed Forecasting */}
-            <Forecast data={forecastData} />
-            
-            {/* Interactive Metrics Grid */}
-            <GridDetails 
-              data={weatherData} 
-              pollution={pollutionData}
-              unit={unit} 
-              onTileClick={handleOpenDetail} 
-            />
-          </main>
-        ) : (
-          /* Initial Empty Onboarding State */
-          <WelcomeState onQuickSearch={handleSearch} />
-        )}
 
-        {/* Minimalist Branded Footer */}
-        <footer style={{ textAlign: 'center', padding: '60px 0 20px', opacity: 0.4, fontSize: '0.85rem', fontWeight: 500 }}>
-          <p>© 2026 WeatherDash Obsidian Edition</p>
-          <p style={{ marginTop: '8px' }}>Powered by OpenWeatherMap Official API</p>
-        </footer>
-      </div>
+            {/* Center Column: High-Res Weather Hero */}
+            <div className="center-column">
+              <WeatherHero data={weatherData} />
+            </div>
+
+            {/* Right Column: Secondary Metrics */}
+            <div className="right-column">
+              <MetricWidgets 
+                data={weatherData} 
+                pollution={pollutionData} 
+                forecast={forecastData}
+                onTileClick={handleOpenDetail} 
+              />
+            </div>
+
+          </main>
+
+          {/* Bottom Wavy Shelf: 7-Day Forecast */}
+          <footer className="bottom-wavy-shelf">
+            <Forecast data={forecastData} />
+          </footer>
+        </>
+      )}
+
+      {/* Detail Analysis Modal */}
+      {isModalOpen && (
+        <MetricModal 
+          isOpen={isModalOpen}
+          metric={selectedMetric} 
+          onClose={handleCloseDetail} 
+        />
+      )}
     </div>
   );
 }

@@ -36,19 +36,25 @@
   
   --transition-normal: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
   --transition-fast: all 0.2s ease;
+
+  /* Ultra Glass Logic - High Transparency, High Blur */
+  --glass-bg: rgba(255, 255, 255, 0.04);
+  --glass-border: rgba(255, 255, 255, 1.0);
+  --glass-blur: blur(64px);
+  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.15);
 }
 
-/* Light Mode Overrides - Clean, airy, and high-contrast iOS style */
+/* Light Mode Overrides - iOS Style with higher glass opacity */
 .light-mode {
   --bg-primary: #f0f9ff;
   --bg-secondary: #ffffff;
   --text-primary: #1e293b;
   --text-secondary: #475569;
   --text-muted: #94a3b8;
-  --glass-bg: rgba(255, 255, 255, 0.6);
-  --glass-border: rgba(0, 0, 0, 0.05);
+  --glass-bg: rgba(224, 242, 254, 0.5);
+  --glass-border: rgba(255, 255, 255, 0.8);
   --glass-shadow: 0 4px 24px rgba(0, 0, 0, 0.05);
-  --accent-blue: #007aff; /* Apple Blue */
+  --accent-blue: #007aff;
 }
 
 /* Base Reset & Smooth Transitions */
@@ -69,20 +75,183 @@ body {
   background-color: var(--bg-primary);
   color: var(--text-primary);
   min-height: 100vh;
-  overflow-x: hidden;
+  overflow: hidden; /* App is a fixed viewport dashboard now */
   line-height: 1.5;
-  transition: background 1s ease, color 0.3s ease;
+  transition: background 1.5s ease, color 0.3s ease;
 }
 
-/* Typography Extensions - Apple Thin Style */
+/* Panoramic Grid Architecture */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+  padding: 40px;
+  gap: 20px;
+  position: relative;
+}
+
+.main-panorama {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 1.5fr 1fr;
+  gap: 40px;
+  align-items: center;
+  position: relative;
+  z-index: 10;
+}
+
+.bottom-wavy-shelf {
+  height: 160px;
+  width: 100%;
+  position: relative;
+  z-index: 20;
+}
+
+/* Typography Extensions - 'Wonderful' Weights */
 .hero-temp span {
-  font-weight: 200 !important;
-  letter-spacing: -2px;
+  font-weight: 200;
+  letter-spacing: -4px;
 }
 
-.hero-city {
-  font-weight: 500 !important;
-  font-size: 2.2rem !important;
+.hero-condition-main {
+  font-size: 4.5rem;
+  font-weight: 600;
+  line-height: 1.1;
+  margin-bottom: 8px;
+}
+
+/* Wonderful Header - Panoramic 3-Column */
+.wonderful-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 10px;
+  height: 60px;
+  z-index: 100;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  opacity: 0.9;
+}
+
+.header-pill {
+  display: flex;
+  align-items: center;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  padding: 6px 20px;
+  border-radius: 99px;
+  gap: 15px;
+  box-shadow: var(--glass-shadow);
+}
+
+.pill-btn {
+  background: transparent;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: var(--text-primary);
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+
+.pill-btn:hover { opacity: 1; }
+
+.pill-divider {
+  width: 1px;
+  height: 20px;
+  background: var(--glass-border);
+  opacity: 0.3;
+}
+
+.pill-search input {
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 0.95rem;
+  outline: none;
+  width: 140px;
+  text-align: center;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.time-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  font-weight: 600;
+}
+
+.current-time { font-size: 1.1rem; }
+.current-date { font-size: 0.85rem; opacity: 0.6; }
+
+.user-profile img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid var(--glass-border);
+  object-fit: cover;
+}
+
+/* Glass Tile Alt - Wonderful Style */
+.glass-tile-alt {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  cursor: pointer;
+  transition: transform 0.3s ease, border-color 0.3s ease;
+}
+
+.glass-tile-alt:hover {
+  transform: translateY(-4px);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+/* Animations for Panoramic Transition */
+.animate-left { animation: slideLeft 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+.animate-right { animation: slideRight 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+
+@keyframes slideLeft {
+  from { opacity: 0; transform: translateX(-40px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slideRight {
+  from { opacity: 0; transform: translateX(40px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+/* Atmosphere Glow Animations */
+@keyframes glow-pulse {
+  0% { transform: scale(1); filter: blur(40px) opacity(0.5); }
+  50% { transform: scale(1.1); filter: blur(80px) opacity(0.8); }
+  100% { transform: scale(1); filter: blur(40px) opacity(0.5); }
+}
+
+.atmos-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 500px;
+  height: 500px;
+  border-radius: 50%;
+  z-index: -1;
+  animation: glow-pulse 6s infinite ease-in-out;
 }
 
 /* Base Pulse Animations */
