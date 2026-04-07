@@ -16,65 +16,50 @@ import { CONFIG } from '../api/weatherApi';
  * @param {String} props.unit - Current temperature unit
  */
 export default function CurrentWeather({ data, unit }) {
+  // Gracefully handle missing data
   if (!data) return null;
 
   const temp = Math.round(data.main.temp);
+  const high = Math.round(data.main.temp_max);
+  const low = Math.round(data.main.temp_min);
   const condition = data.weather[0].main;
   const description = data.weather[0].description;
-  
-  // Custom atmospheric mapping to match the 'Wonderful' aesthetic
-  const getAtmosphericSubtitle = (cond) => {
-    const c = cond.toLowerCase();
-    if (c.includes('sunny') || c.includes('clear')) return 'mostly sunny';
-    if (c.includes('cloud')) return 'partly cloudy skies';
-    if (c.includes('rain')) return 'persistent rainfall';
-    if (c.includes('storm')) return 'intense weather conditions';
-    return c;
-  };
-
-  const getRealisticDescription = (cond) => {
-    const c = cond.toLowerCase();
-    if (c.includes('clear')) return 'Clear skies with occasional clouds. Light winds keep temperatures comfortable, warm afternoons, and cooler evenings.';
-    if (c.includes('cloud')) return 'Varied cloud cover with intervals of sunshine. Expect mild humidity and gentle breezes throughout the day.';
-    if (c.includes('storm')) return 'Heavy rain, strong winds, and occasional lightning expected. Sudden downpours may lead to localized flooding in some areas.';
-    return 'Expect atmospheric variation through the day. Maintain awareness of local weather advisories.';
-  };
+  const icon = data.weather[0].icon;
 
   return (
-    <section className="wonderful-current animate-left">
-      
-      {/* Primary Condition - Large & Impactful */}
-      <h1 className="hero-condition-main">
-        {condition === 'Clear' ? 'Mostly Sunny' : condition}
-      </h1>
-
-      {/* Atmospheric Subtitle */}
-      <h2 style={{ fontSize: '1.8rem', fontWeight: 400, opacity: 0.8, marginBottom: '24px' }}>
-        {getAtmosphericSubtitle(condition)}
+    <section
+      className="hero-weather animate-up delay-1"
+      aria-label="Current Weather Summary"
+      style={{ padding: '40px 0 20px' }}
+    >
+      {/* City Name Header - Apple Standard Weight */}
+      <h2 className="hero-city" style={{ marginBottom: '8px' }}>
+        {data.name}
       </h2>
 
-      {/* Realistic Description Block */}
-      <p style={{ maxWidth: '380px', fontSize: '1rem', opacity: 0.6, lineHeight: 1.6, marginBottom: '60px' }}>
-        {getRealisticDescription(condition)}
-      </p>
+      {/* Primary Weather Icon - Premium drop shadow */}
+      <img
+        src={`${CONFIG.ICON_URL}/${icon}@4x.png`}
+        alt={description}
+        style={{ width: '100px', height: '100px', margin: '-10px 0', filter: 'drop-shadow(0 0 20px rgba(255,255,255,0.2))' }}
+      />
 
-      {/* Oversized Temperature */}
-      <div className="wonderful-temp" style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginBottom: '24px' }}>
-        <span style={{ fontSize: '8.5rem', fontWeight: 200, letterSpacing: '-6px' }}>{temp}</span>
-        <span style={{ fontSize: '4rem', fontWeight: 200, opacity: 0.5 }}>°</span>
+      {/* Temperature Display - Ultra-thin iOS weight */}
+      <div className="hero-temp" style={{ position: 'relative', display: 'flex', justifyContent: 'center' }}>
+        <span style={{ fontSize: '8rem', lineHeight: 1 }}>{temp}</span>
+        <span style={{ fontSize: '4rem', fontWeight: 200, position: 'absolute', top: '10px', right: '-30px', opacity: 0.5 }}>°</span>
       </div>
 
-      {/* Location & Metadata Bar */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '16px', fontSize: '1.1rem', fontWeight: 500 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-          {data.name}
-        </div>
-        <div className="glass-pill" style={{ padding: '4px 12px', fontSize: '0.8rem', background: 'rgba(255,255,255,0.1)', borderRadius: '99px' }}>
-          UV Ind.: 2
-        </div>
+      {/* Condition & Description - iOS Style Stack */}
+      <div className="hero-condition" style={{ marginTop: '12px', fontSize: '1.4rem', fontWeight: 600 }}>
+        {condition}
       </div>
 
+      {/* Daily Highs & Lows - Minimalist Footer */}
+      <div className="hero-range" style={{ marginTop: '4px', fontSize: '1.2rem' }}>
+        <span>H:{high}°</span>
+        <span style={{ marginLeft: '12px' }}>L:{low}°</span>
+      </div>
     </section>
   );
 }

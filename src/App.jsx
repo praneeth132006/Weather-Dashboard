@@ -19,8 +19,6 @@ import CurrentWeather from './components/CurrentWeather';
 import GridDetails from './components/GridDetails';
 import Forecast from './components/Forecast';
 import MetricModal from './components/MetricModal';
-import WeatherHero from './components/WeatherHero';
-import MetricWidgets from './components/MetricWidgets';
 
 /**
  * Main Application Component
@@ -30,7 +28,7 @@ function App() {
   const [unit, setUnit] = useState(localStorage.getItem(CONFIG.STORAGE_KEY_UNIT) || 'metric');
   const [theme, setTheme] = useState(localStorage.getItem('weatherdash_theme') || 'dark');
   const [lastCity, setLastCity] = useState(localStorage.getItem(CONFIG.STORAGE_KEY_LAST_CITY) || '');
-  
+
   /* --- Dynamic Weather Data State --- */
   const [weatherData, setWeatherData] = useState(null);
   const [forecastData, setForecastData] = useState(null);
@@ -49,7 +47,7 @@ function App() {
   useEffect(() => {
     // Sync theme to body class for global CSS variables
     document.body.className = theme === 'light' ? 'light-mode' : '';
-    
+
     if (lastCity) {
       handleSearch(lastCity);
     }
@@ -87,12 +85,12 @@ function App() {
     try {
       // API Logic (Abstracted into weatherApi.js with pollution sync)
       const { currentData, forecastData, pollutionData } = await fetchWeatherByCity(city, unit);
-      
+
       // Update data state
       setWeatherData(currentData);
       setForecastData(forecastData);
       setPollutionData(pollutionData);
-      
+
       // Update persistence
       setLastCity(currentData.name);
       localStorage.setItem(CONFIG.STORAGE_KEY_LAST_CITY, currentData.name);
@@ -100,8 +98,8 @@ function App() {
       // Detailed error mapping for clear user feedback
       setError({
         title: err.status === 404 ? 'Location Not Found' : 'Connection Failure',
-        message: err.status === 404 
-          ? `We couldn't locate "${city}". Please check the spelling.` 
+        message: err.status === 404
+          ? `We couldn't locate "${city}". Please check the spelling.`
           : 'Check your internet connection and try again.'
       });
     } finally {
@@ -118,26 +116,26 @@ function App() {
    */
   const getAppStyle = () => {
     if (!weatherData || !weatherData.weather?.[0]) return theme === 'light' ? '#f0f9ff' : '#020617';
-    
+
     const condition = weatherData.weather[0].main.toLowerCase();
     const id = weatherData.weather[0].id;
-    
+
     // Light Mode iOS Gradients (Airy & Bright)
     if (theme === 'light') {
-      if (id >= 200 && id < 300) return 'linear-gradient(180deg, #94a3b8 0%, #cbd5e1 100%)'; 
-      if (id >= 300 && id < 600) return 'linear-gradient(180deg, #7dd3fc 0%, #e0f2fe 100%)'; 
-      if (id >= 600 && id < 700) return 'linear-gradient(180deg, #f1f5f9 0%, #ffffff 100%)'; 
-      if (id >= 700 && id < 800) return 'linear-gradient(180deg, #cbd5e1 0%, #f1f5f9 100%)'; 
-      if (id === 800) return 'linear-gradient(180deg, #38bdf8 0%, #bae6fd 100%)'; 
+      if (id >= 200 && id < 300) return 'linear-gradient(180deg, #94a3b8 0%, #cbd5e1 100%)';
+      if (id >= 300 && id < 600) return 'linear-gradient(180deg, #7dd3fc 0%, #e0f2fe 100%)';
+      if (id >= 600 && id < 700) return 'linear-gradient(180deg, #f1f5f9 0%, #ffffff 100%)';
+      if (id >= 700 && id < 800) return 'linear-gradient(180deg, #cbd5e1 0%, #f1f5f9 100%)';
+      if (id === 800) return 'linear-gradient(180deg, #38bdf8 0%, #bae6fd 100%)';
       return 'linear-gradient(180deg, #94a3b8 0%, #f1f5f9 100%)';
     }
 
     // Dark Mode iOS Gradients (Deep Atmospheric)
-    if (id >= 200 && id < 300) return 'linear-gradient(180deg, #1e1b4b 0%, #020617 100%)'; 
-    if (id >= 300 && id < 600) return 'linear-gradient(180deg, #1e293b 0%, #0f172a 100%)'; 
-    if (id >= 600 && id < 700) return 'linear-gradient(180deg, #475569 0%, #020617 100%)'; 
-    if (id >= 700 && id < 800) return 'linear-gradient(180deg, #27272a 0%, #020617 100%)'; 
-    if (id === 800) return 'linear-gradient(180deg, #0a1628 0%, #020617 100%)'; 
+    if (id >= 200 && id < 300) return 'linear-gradient(180deg, #1e1b4b 0%, #020617 100%)';
+    if (id >= 300 && id < 600) return 'linear-gradient(180deg, #1e293b 0%, #0f172a 100%)';
+    if (id >= 600 && id < 700) return 'linear-gradient(180deg, #475569 0%, #020617 100%)';
+    if (id >= 700 && id < 800) return 'linear-gradient(180deg, #27272a 0%, #020617 100%)';
+    if (id === 800) return 'linear-gradient(180deg, #0a1628 0%, #020617 100%)';
     return 'linear-gradient(180deg, #111827 0%, #020617 100%)';
   };
 
@@ -175,76 +173,71 @@ function App() {
   };
 
   return (
-    <div 
-      className="app-container"
-      style={{ 
-        background: getAppStyle(), 
-        transition: 'background 2s cubic-bezier(0.16, 1, 0.3, 1)' 
+    <div
+      style={{
+        background: getAppStyle(),
+        minHeight: '100vh',
+        transition: 'background 2s cubic-bezier(0.16, 1, 0.3, 1)'
       }}
     >
-      {/* Background Atmosphere Glow */}
-      <div className="atmos-glow" style={{ background: theme === 'light' ? 'rgba(56, 189, 248, 0.3)' : 'rgba(59, 130, 246, 0.2)' }}></div>
-
-      {/* Main Navigation & Utility Header */}
-      <Header 
-        onSearch={handleSearch} 
-        unit={unit} 
-        toggleUnit={toggleUnit} 
-        theme={theme}
-        toggleTheme={toggleTheme}
-        loading={loading} 
-      />
-
-      {loading ? (
-        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <div className="pulse-glow" style={{ width: '40px', height: '40px', background: 'var(--accent-blue)', borderRadius: '50%' }}></div>
-        </div>
-      ) : error ? (
-        <ErrorState error={error} onRetry={() => handleSearch(lastCity || 'London')} />
-      ) : !weatherData ? (
-        <WelcomeState onRecentSearch={handleSearch} />
-      ) : (
-        <>
-          {/* Main Panoramic Content Area (3 Columns) */}
-          <main className="main-panorama">
-            
-            {/* Left Column: Conditions & Identity */}
-            <div className="left-column">
-              <CurrentWeather data={weatherData} unit={unit} />
-            </div>
-
-            {/* Center Column: High-Res Weather Hero */}
-            <div className="center-column">
-              <WeatherHero data={weatherData} />
-            </div>
-
-            {/* Right Column: Secondary Metrics */}
-            <div className="right-column">
-              <MetricWidgets 
-                data={weatherData} 
-                pollution={pollutionData} 
-                forecast={forecastData}
-                onTileClick={handleOpenDetail} 
-              />
-            </div>
-
-          </main>
-
-          {/* Bottom Wavy Shelf: 7-Day Forecast */}
-          <footer className="bottom-wavy-shelf">
-            <Forecast data={forecastData} />
-          </footer>
-        </>
-      )}
-
-      {/* Detail Analysis Modal */}
-      {isModalOpen && (
-        <MetricModal 
-          isOpen={isModalOpen}
-          metric={selectedMetric} 
-          onClose={handleCloseDetail} 
+      <div className="app-container">
+        {/* Main Navigation & Utility Header */}
+        <Header
+          onSearch={handleSearch}
+          unit={unit}
+          toggleUnit={toggleUnit}
+          theme={theme}
+          toggleTheme={toggleTheme}
+          loading={loading}
         />
-      )}
+
+        {/* Global Modal Overlay - Only visible when a metric is selected */}
+        <MetricModal
+          isOpen={isModalOpen}
+          onClose={handleCloseDetail}
+          metric={selectedMetric}
+        />
+
+        {/* Conditional Component Rendering */}
+        {loading && !weatherData ? (
+          <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '60vh' }}>
+            <div className="animate-fade" style={{ fontSize: '1.2rem', fontWeight: 600, color: 'var(--text-muted)' }}>
+              Gathering Meteorological Data...
+            </div>
+          </div>
+        ) : error ? (
+          <ErrorState
+            title={error.title}
+            message={error.message}
+            onRetry={() => setError(null)}
+          />
+        ) : weatherData && forecastData ? (
+          <main>
+            {/* Primary Hero Visualization */}
+            <CurrentWeather data={weatherData} unit={unit} />
+
+            {/* Multi-Day Detailed Forecasting */}
+            <Forecast data={forecastData} />
+
+            {/* Interactive Metrics Grid */}
+            <GridDetails
+              data={weatherData}
+              pollution={pollutionData}
+              unit={unit}
+              onTileClick={handleOpenDetail}
+            />
+          </main>
+        ) : (
+          /* Initial Empty Onboarding State */
+          <WelcomeState onQuickSearch={handleSearch} />
+        )}
+
+        {/* Minimalist Branded Footer */}
+        <footer style={{ textAlign: 'center', padding: '60px 0 20px', opacity: 0.4, fontSize: '0.85rem', fontWeight: 500 }}>
+          <p>© 2026 WeatherDash Obsidian Edition</p>
+          <p style={{ marginTop: '8px' }}>Powered by OpenWeatherMap Official API</p>
+        </footer>
+      </div>
     </div>
   );
 }
