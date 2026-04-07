@@ -1,31 +1,28 @@
 export const CONFIG = {
   OWM_BASE: 'https://api.openweathermap.org/data/2.5',
+  OWM_GEO: 'https://api.openweathermap.org/geo/1.0',
   ICON_URL: 'https://openweathermap.org/img/wn',
-  STORAGE_KEY_API: 'weatherdash_api_key',
+  API_KEY: '4397900e9180db0200c9fa64d89b3e66', // Hardcoded as requested
   STORAGE_KEY_UNIT: 'weatherdash_unit',
   STORAGE_KEY_LAST_CITY: 'weatherdash_last_city',
 };
 
-export const fetchWeatherByCity = async (city, apiKey, unit) => {
-  const [currentRes, forecastRes] = await Promise.all([
-    fetch(`${CONFIG.OWM_BASE}/weather?q=${encodeURIComponent(city)}&appid=${apiKey}&units=${unit}`),
-    fetch(`${CONFIG.OWM_BASE}/forecast?q=${encodeURIComponent(city)}&appid=${apiKey}&units=${unit}`)
-  ]);
-
-  if (!currentRes.ok) {
-    const errData = await currentRes.json();
-    throw { status: currentRes.status, message: errData.message };
-  }
-
-  const currentData = await currentRes.json();
-  const forecastData = await forecastRes.json();
-  return { currentData, forecastData };
+export const fetchWeatherByCity = async (city, unit) => {
+  // First, get lat/lon from Geocoding API for better reliability
+  const geoRes = await fetch(`${CONFIG.OWM_GEO}/direct?q=${encodeURIComponent(city)}&limit=1&appid=${CONFIG.API_KEY}`);
+  if (!geoRes.ok) throw { status: geoRes.status, message: 'Geocoding failed' };
+  
+  const geoData = await geoRes.json();
+  if (geoData.length === 0) throw { status: 404, message: 'City not found' };
+  
+  const { lat, lon, name, country } = geoData[0];
+  return fetchWeatherByCoords(lat, lon, unit, `${name}, ${country}`);
 };
 
-export const fetchWeatherByCoords = async (lat, lon, apiKey, unit) => {
+export const fetchWeatherByCoords = async (lat, lon, unit, displayName = null) => {
   const [currentRes, forecastRes] = await Promise.all([
-    fetch(`${CONFIG.OWM_BASE}/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=${unit}`),
-    fetch(`${CONFIG.OWM_BASE}/forecast?lat=${lat}&lon=${lon}&appid=${apiKey}&units=${unit}`)
+    fetch(`${CONFIG.OWM_BASE}/weather?lat=${lat}&lon=${lon}&appid=${CONFIG.API_KEY}&units=${unit}`),
+    fetch(`${CONFIG.OWM_BASE}/forecast?lat=${lat}&lon=${lon}&appid=${CONFIG.API_KEY}&units=${unit}`)
   ]);
 
   if (!currentRes.ok) {
@@ -35,5 +32,10 @@ export const fetchWeatherByCoords = async (lat, lon, apiKey, unit) => {
 
   const currentData = await currentRes.json();
   const forecastData = await forecastRes.json();
+
+  if (displayName) {
+    currentData.name = displayName; // Use full name from geocoder
+  }
+
   return { currentData, forecastData };
 };
