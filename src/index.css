@@ -38,6 +38,19 @@
   --transition-fast: all 0.2s ease;
 }
 
+/* Light Mode Overrides - Clean, airy, and high-contrast iOS style */
+.light-mode {
+  --bg-primary: #f0f9ff;
+  --bg-secondary: #ffffff;
+  --text-primary: #1e293b;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+  --glass-bg: rgba(255, 255, 255, 0.6);
+  --glass-border: rgba(0, 0, 0, 0.05);
+  --glass-shadow: 0 4px 24px rgba(0, 0, 0, 0.05);
+  --accent-blue: #007aff; /* Apple Blue */
+}
+
 /* Base Reset & Smooth Transitions */
 *, *::before, *::after {
   margin: 0;
@@ -58,7 +71,18 @@ body {
   min-height: 100vh;
   overflow-x: hidden;
   line-height: 1.5;
-  transition: background 1.5s ease;
+  transition: background 1s ease, color 0.3s ease;
+}
+
+/* Typography Extensions - Apple Thin Style */
+.hero-temp span {
+  font-weight: 200 !important;
+  letter-spacing: -2px;
+}
+
+.hero-city {
+  font-weight: 500 !important;
+  font-size: 2.2rem !important;
 }
 
 /* Base Pulse Animations */

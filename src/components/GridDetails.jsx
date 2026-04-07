@@ -131,7 +131,10 @@ export default function GridDetails({ data, pollution, unit, onTileClick }) {
           className="glass-tile detail-tile"
           onClick={() => onTileClick(m)}
           title={`Click for more info on ${m.title}`}
-          style={{ borderTop: m.color ? `3px solid ${m.color}` : '1px solid var(--glass-border)' }}
+          style={{ 
+            borderTop: m.color ? `3px solid ${m.color}` : '1px solid var(--glass-border)',
+            borderRadius: '24px' // Modern iOS radius
+          }}
         >
           {/* Tile Content Header - Icon + Label */}
           <div className="tile-header">

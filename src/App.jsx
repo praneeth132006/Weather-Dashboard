@@ -26,6 +26,7 @@ import MetricModal from './components/MetricModal';
 function App() {
   /* --- Persistent State (LocalStorage) --- */
   const [unit, setUnit] = useState(localStorage.getItem(CONFIG.STORAGE_KEY_UNIT) || 'metric');
+  const [theme, setTheme] = useState(localStorage.getItem('weatherdash_theme') || 'dark');
   const [lastCity, setLastCity] = useState(localStorage.getItem(CONFIG.STORAGE_KEY_LAST_CITY) || '');
   
   /* --- Dynamic Weather Data State --- */
@@ -40,14 +41,25 @@ function App() {
   const [selectedMetric, setSelectedMetric] = useState(null);
 
   /**
-   * Initial Data Fetch Effect
-   * Runs once on mount to restore the user's previous session city.
+   * Initial Data Fetch & Theme Sync Effect
+   * Runs once on mount to restore the user's previous session settings.
    */
   useEffect(() => {
+    // Sync theme to body class for global CSS variables
+    document.body.className = theme === 'light' ? 'light-mode' : '';
+    
     if (lastCity) {
       handleSearch(lastCity);
     }
   }, []);
+
+  /**
+   * Theme Sync Effect
+   * Updates body class whenever theme changes.
+   */
+  useEffect(() => {
+    document.body.className = theme === 'light' ? 'light-mode' : '';
+  }, [theme]);
 
   /**
    * Unit Change Propagation Effect
@@ -103,20 +115,28 @@ function App() {
    * @returns {String} CSS variable or fallback color
    */
   const getAppStyle = () => {
-    if (!weatherData || !weatherData.weather?.[0]) return '#020617';
+    if (!weatherData || !weatherData.weather?.[0]) return theme === 'light' ? '#f0f9ff' : '#020617';
     
     const condition = weatherData.weather[0].main.toLowerCase();
     const id = weatherData.weather[0].id;
     
-    // Detailed Atmospheric Theme Mapping
-    if (id >= 200 && id < 300) return 'linear-gradient(180deg, #1e1b4b 0%, #020617 100%)'; // Thunderstorm (Deep Navy)
-    if (id >= 300 && id < 600) return 'linear-gradient(180deg, #1e293b 0%, #0f172a 100%)'; // Rain/Drizzle (Slate Blue)
-    if (id >= 600 && id < 700) return 'linear-gradient(180deg, #475569 0%, #020617 100%)'; // Snow (Steel)
-    if (id >= 700 && id < 800) return 'linear-gradient(180deg, #27272a 0%, #020617 100%)'; // Atmosphere (Mist/Haze)
-    if (id === 800) return 'linear-gradient(180deg, #0a1628 0%, #020617 100%)'; // Clear (Clean Obsidian)
-    if (id > 800) return 'linear-gradient(180deg, #111827 0%, #020617 100%)'; // Cloudy (Dark Gray)
-    
-    return '#020617';
+    // Light Mode iOS Gradients (Airy & Bright)
+    if (theme === 'light') {
+      if (id >= 200 && id < 300) return 'linear-gradient(180deg, #94a3b8 0%, #cbd5e1 100%)'; 
+      if (id >= 300 && id < 600) return 'linear-gradient(180deg, #7dd3fc 0%, #e0f2fe 100%)'; 
+      if (id >= 600 && id < 700) return 'linear-gradient(180deg, #f1f5f9 0%, #ffffff 100%)'; 
+      if (id >= 700 && id < 800) return 'linear-gradient(180deg, #cbd5e1 0%, #f1f5f9 100%)'; 
+      if (id === 800) return 'linear-gradient(180deg, #38bdf8 0%, #bae6fd 100%)'; 
+      return 'linear-gradient(180deg, #94a3b8 0%, #f1f5f9 100%)';
+    }
+
+    // Dark Mode iOS Gradients (Deep Atmospheric)
+    if (id >= 200 && id < 300) return 'linear-gradient(180deg, #1e1b4b 0%, #020617 100%)'; 
+    if (id >= 300 && id < 600) return 'linear-gradient(180deg, #1e293b 0%, #0f172a 100%)'; 
+    if (id >= 600 && id < 700) return 'linear-gradient(180deg, #475569 0%, #020617 100%)'; 
+    if (id >= 700 && id < 800) return 'linear-gradient(180deg, #27272a 0%, #020617 100%)'; 
+    if (id === 800) return 'linear-gradient(180deg, #0a1628 0%, #020617 100%)'; 
+    return 'linear-gradient(180deg, #111827 0%, #020617 100%)';
   };
 
   /**
@@ -138,6 +158,16 @@ function App() {
     setIsModalOpen(true);
   };
 
+  /**
+   * Theme Toggle Logic
+   * Swaps between Light and Dark modes.
+   */
+  const toggleTheme = () => {
+    const nextTheme = theme === 'light' ? 'dark' : 'light';
+    setTheme(nextTheme);
+    localStorage.setItem('weatherdash_theme', nextTheme);
+  };
+
   const handleCloseDetail = () => {
     setIsModalOpen(false);
   };
@@ -156,6 +186,8 @@ function App() {
           onSearch={handleSearch} 
           unit={unit} 
           toggleUnit={toggleUnit} 
+          theme={theme}
+          toggleTheme={toggleTheme}
           loading={loading} 
         />
 
