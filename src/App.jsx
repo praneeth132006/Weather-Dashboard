@@ -31,6 +31,7 @@ function App() {
   /* --- Dynamic Weather Data State --- */
   const [weatherData, setWeatherData] = useState(null);
   const [forecastData, setForecastData] = useState(null);
+  const [pollutionData, setPollutionData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -70,12 +71,13 @@ function App() {
     setLoading(true);
     setError(null);
     try {
-      // API Logic (Abstracted into weatherApi.js for modularity)
-      const { currentData, forecastData } = await fetchWeatherByCity(city, unit);
+      // API Logic (Abstracted into weatherApi.js with pollution sync)
+      const { currentData, forecastData, pollutionData } = await fetchWeatherByCity(city, unit);
       
       // Update data state
       setWeatherData(currentData);
       setForecastData(forecastData);
+      setPollutionData(pollutionData);
       
       // Update persistence
       setLastCity(currentData.name);
@@ -101,13 +103,19 @@ function App() {
    * @returns {String} CSS variable or fallback color
    */
   const getAppStyle = () => {
-    if (!weatherData) return '#020617';
-    const main = weatherData.weather[0].main.toLowerCase();
+    if (!weatherData || !weatherData.weather?.[0]) return '#020617';
     
-    // Smooth transition between dark atmospheric gradients
-    if (main.includes('clear')) return 'linear-gradient(180deg, #0a1628 0%, #020617 100%)';
-    if (main.includes('cloud')) return 'linear-gradient(180deg, #1e293b 0%, #0a1628 100%)';
-    if (main.includes('rain')) return 'linear-gradient(180deg, #0f172a 0%, #020617 100%)';
+    const condition = weatherData.weather[0].main.toLowerCase();
+    const id = weatherData.weather[0].id;
+    
+    // Detailed Atmospheric Theme Mapping
+    if (id >= 200 && id < 300) return 'linear-gradient(180deg, #1e1b4b 0%, #020617 100%)'; // Thunderstorm (Deep Navy)
+    if (id >= 300 && id < 600) return 'linear-gradient(180deg, #1e293b 0%, #0f172a 100%)'; // Rain/Drizzle (Slate Blue)
+    if (id >= 600 && id < 700) return 'linear-gradient(180deg, #475569 0%, #020617 100%)'; // Snow (Steel)
+    if (id >= 700 && id < 800) return 'linear-gradient(180deg, #27272a 0%, #020617 100%)'; // Atmosphere (Mist/Haze)
+    if (id === 800) return 'linear-gradient(180deg, #0a1628 0%, #020617 100%)'; // Clear (Clean Obsidian)
+    if (id > 800) return 'linear-gradient(180deg, #111827 0%, #020617 100%)'; // Cloudy (Dark Gray)
+    
     return '#020617';
   };
 
@@ -182,6 +190,7 @@ function App() {
             {/* Interactive Metrics Grid */}
             <GridDetails 
               data={weatherData} 
+              pollution={pollutionData}
               unit={unit} 
               onTileClick={handleOpenDetail} 
             />

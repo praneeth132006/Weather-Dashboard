@@ -49,7 +49,7 @@ export default function MetricModal({ isOpen, onClose, metric }) {
       aria-modal="true"
       aria-labelledby="modal-title"
     >
-      <div className="modal-content animate-scale">
+      <div className="modal-content animate-scale" style={{ borderTop: metric.color ? `4px solid ${metric.color}` : '1px solid rgba(255, 255, 255, 0.1)' }}>
         {/* Close Button - Premium Minimalist Style */}
         <button 
           className="modal-close" 
@@ -64,7 +64,7 @@ export default function MetricModal({ isOpen, onClose, metric }) {
 
         {/* Modal Header - Icon + Title */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '24px' }}>
-          <div style={{ color: 'var(--accent-blue)', opacity: 0.8 }}>
+          <div style={{ color: metric.color || 'var(--accent-blue)', opacity: 0.8 }}>
             {metric.icon}
           </div>
           <h2 id="modal-title" className="modal-title">{metric.title}</h2>
@@ -72,30 +72,33 @@ export default function MetricModal({ isOpen, onClose, metric }) {
 
         {/* Primary Value Display */}
         <div style={{ marginBottom: '32px' }}>
-          <span style={{ fontSize: '3.5rem', fontWeight: 600, color: 'var(--text-primary)' }}>
+          <span style={{ fontSize: '3.5rem', fontWeight: 700, color: metric.color || 'var(--text-primary)', letterSpacing: '-1px' }}>
             {metric.value}
           </span>
-          <p style={{ marginTop: '8px', color: 'var(--text-secondary)', fontWeight: 500 }}>
+          <p style={{ marginTop: '4px', color: 'var(--text-muted)', fontWeight: 600, fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '1px' }}>
             Current Reading
           </p>
         </div>
 
         {/* Detailed Explanation Section */}
         <div className="modal-description">
-          <h4 style={{ color: 'var(--text-primary)', marginBottom: '8px', fontSize: '1.1rem' }}>
-            About this Metric
+          <h4 style={{ color: 'var(--text-primary)', marginBottom: '12px', fontSize: '1.2rem', fontWeight: 700 }}>
+            Insight & Analysis
           </h4>
-          <p>
+          <p style={{ fontSize: '1.05rem', lineHeight: 1.6, color: 'var(--text-secondary)' }}>
             {metric.description}
           </p>
         </div>
 
         {/* Footer Insight */}
-        <div style={{ marginTop: '32px', padding: '16px', background: 'rgba(255,255,255,0.03)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
-          <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', fontStyle: 'italic' }}>
-            {metric.insight}
-          </p>
-        </div>
+        {metric.insight && (
+          <div style={{ marginTop: '32px', padding: '20px', background: 'rgba(255,255,255,0.03)', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)', boxShadow: 'inset 0 0 20px rgba(0,0,0,0.2)' }}>
+            <p style={{ fontSize: '0.95rem', color: 'var(--text-secondary)', fontStyle: 'italic', fontWeight: 500, lineHeight: 1.5 }}>
+              <span style={{ color: metric.color || 'var(--accent-blue)', fontWeight: 700, marginRight: '8px' }}>Pro Tip:</span>
+              {metric.insight}
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );

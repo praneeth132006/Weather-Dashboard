@@ -56,7 +56,7 @@ export default function Forecast({ data }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
       
-      {/* 24-Hour Scroll Section - Interactive Horizontal Layout */}
+      {/* 24-Hour Outlook Section */}
       <section 
         className="glass-tile forecast-tile animate-up delay-3"
         aria-label="Hourly Weather Forecast"
@@ -68,57 +68,66 @@ export default function Forecast({ data }) {
         
         <div className="forecast-scroll" style={{ marginTop: '16px' }}>
           {hourly.map((h, i) => (
-            <div key={i} className="forecast-item" title={h.condition}>
-              <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>{h.time}</span>
+            <div key={i} className="forecast-item" title={h.condition} 
+                 style={{ animation: `fadeIn 0.5s ease forwards ${i * 0.05}s` }}>
+              <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 600 }}>{h.time}</span>
               <img 
                 src={`${CONFIG.ICON_URL}/${h.icon}.png`} 
                 alt={h.condition} 
-                style={{ width: '40px', height: '40px', filter: 'drop-shadow(0 0 4px rgba(255,255,255,0.1))' }}
+                style={{ width: '40px', height: '40px', filter: 'drop-shadow(0 0 8px rgba(255,255,255,0.15))' }}
               />
-              <span style={{ fontSize: '1.1rem', fontWeight: 700 }}>{h.temp}°</span>
+              <span style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--text-primary)' }}>{h.temp}°</span>
             </div>
           ))}
         </div>
       </section>
 
-      {/* 5-Day List Section - Minimal Vertical Layout */}
+      {/* 5-Day Precision Forecast Section */}
       <section 
         className="glass-tile forecast-tile animate-up delay-4"
         aria-label="Daily 5-Day Forecast"
       >
         <div className="tile-header">
           <svg className="tile-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"/></svg>
-          Next 5 Days
+          5-Day Forecast
         </div>
 
         <div style={{ marginTop: '12px' }}>
           {daily.map((d, i) => (
-            <div key={i} className="forecast-row">
+            <div key={i} className="forecast-row" style={{ animation: `slideUp 0.6s ease forwards ${i * 0.1}s` }}>
               {/* Day Name */}
-              <span style={{ minWidth: '60px', fontWeight: 600, fontSize: '1rem' }}>
+              <span style={{ minWidth: '60px', fontWeight: 700, fontSize: '1rem', color: 'var(--text-primary)' }}>
                 {d.day}
               </span>
               
               {/* Central Condition Layout */}
-              <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '8px', paddingLeft: '20px' }}>
+              <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '12px', paddingLeft: '20px' }}>
                 <img 
                   className="forecast-icon" 
                   src={`${CONFIG.ICON_URL}/${d.icon}.png`} 
                   alt={d.condition} 
-                  style={{ width: '32px', height: '32px' }}
+                  style={{ width: '36px', height: '36px' }}
                 />
-                <span style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', fontWeight: 500 }}>
+                <span style={{ fontSize: '0.95rem', color: 'var(--text-secondary)', fontWeight: 600 }}>
                   {d.condition}
                 </span>
               </div>
 
-              {/* Temperature Bounds */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '16px', minWidth: '90px', justifyContent: 'flex-end' }}>
-                <span style={{ fontSize: '0.9rem', opacity: 0.4, fontWeight: 500 }}>{d.low}°</span>
-                <div style={{ width: '40px', height: '4px', background: 'rgba(255,255,255,0.05)', borderRadius: '2px', position: 'relative' }}>
-                  <div style={{ position: 'absolute', height: '100%', background: 'linear-gradient(to right, var(--accent-cyan), var(--accent-amber))', borderRadius: '2px', width: '60%', left: '20%' }}></div>
+              {/* Temperature Visualizer Grid */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '16px', minWidth: '120px', justifyContent: 'flex-end' }}>
+                <span style={{ fontSize: '0.9rem', color: 'var(--text-muted)', fontWeight: 600 }}>{d.low}°</span>
+                <div style={{ width: '60px', height: '6px', background: 'rgba(255,255,255,0.05)', borderRadius: '10px', position: 'relative', overflow: 'hidden' }}>
+                  <div style={{ 
+                    position: 'absolute', 
+                    height: '100%', 
+                    background: 'linear-gradient(90deg, var(--accent-cyan), var(--accent-indigo), var(--accent-amber))', 
+                    borderRadius: '10px', 
+                    width: '70%', 
+                    left: '15%',
+                    boxShadow: '0 0 8px rgba(59, 130, 246, 0.3)'
+                  }}></div>
                 </div>
-                <span style={{ fontSize: '1rem', fontWeight: 700 }}>{d.high}°</span>
+                <span style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--text-primary)' }}>{d.high}°</span>
               </div>
             </div>
           ))}

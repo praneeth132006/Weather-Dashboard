@@ -20,22 +20,24 @@ export const fetchWeatherByCity = async (city, unit) => {
 };
 
 export const fetchWeatherByCoords = async (lat, lon, unit, displayName = null) => {
-  const [currentRes, forecastRes] = await Promise.all([
+  const [currentRes, forecastRes, pollutionRes] = await Promise.all([
     fetch(`${CONFIG.OWM_BASE}/weather?lat=${lat}&lon=${lon}&appid=${CONFIG.API_KEY}&units=${unit}`),
-    fetch(`${CONFIG.OWM_BASE}/forecast?lat=${lat}&lon=${lon}&appid=${CONFIG.API_KEY}&units=${unit}`)
+    fetch(`${CONFIG.OWM_BASE}/forecast?lat=${lat}&lon=${lon}&appid=${CONFIG.API_KEY}&units=${unit}`),
+    fetch(`${CONFIG.OWM_BASE}/air_pollution?lat=${lat}&lon=${lon}&appid=${CONFIG.API_KEY}`)
   ]);
 
-  if (!currentRes.ok) {
+  if (!currentRes.ok || !forecastRes.ok || !pollutionRes.ok) {
     const errData = await currentRes.json();
-    throw { status: currentRes.status, message: errData.message };
+    throw { status: currentRes.status, message: errData.message || 'Meteorological sync failed' };
   }
 
   const currentData = await currentRes.json();
   const forecastData = await forecastRes.json();
+  const pollutionData = await pollutionRes.json();
 
   if (displayName) {
-    currentData.name = displayName; // Use full name from geocoder
+    currentData.name = displayName;
   }
 
-  return { currentData, forecastData };
+  return { currentData, forecastData, pollutionData };
 };
